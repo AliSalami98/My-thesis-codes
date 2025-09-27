@@ -3,10 +3,30 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 from data_filling_ss import data, a_Pr
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib import font_manager as fm
+import numpy as np
+
+# 1) Point to your installed file (from your screenshot)
+path = r"C:\Users\ali.salame\AppData\Local\Microsoft\Windows\Fonts\CHARTERBT-ROMAN.OTF"
+# (add the Bold/Italic too if you use them)
+# fm.fontManager.addfont(r"...\CHARTERBT-BOLD.OTF")
+# fm.fontManager.addfont(r"...\CHARTERBT-ITALIC.OTF")
+
+# 2) Register and use the exact internal name
+fm.fontManager.addfont(path)
+prop = fm.FontProperties(fname=path)
+mpl.rcParams["font.family"] = prop.get_name()   # e.g., "Bitstream Charter"
+mpl.rcParams["font.size"] = 11
+mpl.rcParams["axes.labelsize"] = 11
+mpl.rcParams["xtick.labelsize"] = 10
+mpl.rcParams["ytick.labelsize"] = 10
+mpl.rcParams["legend.fontsize"] = 10
 
 # Load data
-zabri = 'omega'
-csv_path = r'C:\Users\ali.salame\Desktop\plots\Thesis figs\TC_slow\Exergy\first patch\Edest_results_omega.csv'
+zabri = 'pcharged'
+csv_path = r'C:\Users\ali.salame\Desktop\plots\Thesis figs\TC_slow\Exergy\first patch\Edest_results_pcharged.csv'
 df = pd.read_csv(csv_path, sep=';')
 
 save_dir = r'C:\Users\ali.salame\Desktop\plots\Thesis figs\TC_slow\Exergy'

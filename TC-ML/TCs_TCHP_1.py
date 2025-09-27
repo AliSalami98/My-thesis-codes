@@ -1,14 +1,32 @@
 import csv
-import numpy as np
 from CoolProp.CoolProp import AbstractState
 import CoolProp.CoolProp as CP
-import matplotlib.pyplot as plt
 from sklearn.metrics import mean_absolute_error, r2_score, mean_absolute_percentage_error
 from sklearn.model_selection import train_test_split
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 import os
 import joblib
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib import font_manager as fm
+import numpy as np
+
+# 1) Point to your installed file (from your screenshot)
+path = r"C:\Users\ali.salame\AppData\Local\Microsoft\Windows\Fonts\CHARTERBT-ROMAN.OTF"
+# (add the Bold/Italic too if you use them)
+# fm.fontManager.addfont(r"...\CHARTERBT-BOLD.OTF")
+# fm.fontManager.addfont(r"...\CHARTERBT-ITALIC.OTF")
+
+# 2) Register and use the exact internal name
+fm.fontManager.addfont(path)
+prop = fm.FontProperties(fname=path)
+mpl.rcParams["font.family"] = prop.get_name()   # e.g., "Bitstream Charter"
+mpl.rcParams["font.size"] = 11
+mpl.rcParams["axes.labelsize"] = 11
+mpl.rcParams["xtick.labelsize"] = 10
+mpl.rcParams["ytick.labelsize"] = 10
+mpl.rcParams["legend.fontsize"] = 10
 
 GP_models_dir = 'GP_models'
 models_GP = [joblib.load(os.path.join(GP_models_dir, f'GP_model_{i+1}.pkl')) for i in range(3)]
@@ -238,7 +256,7 @@ plt.xlabel(r"Measured $\dot{m}_\mathrm{tc1}$ [g/s]", fontsize=16)
 plt.ylabel(r"Predicted $\dot{m}_\mathrm{tc1}$ [g/s]", fontsize=16)
 plt.xticks(fontsize=14); plt.yticks(fontsize=14)
 plt.legend(fontsize=14)
-_annotate_metrics(f"MAPE: {mape_mdot:.1f}%\nR$^2$: {r2_mdot:.2f}")
+_annotate_metrics(f"$MAPE$: {mape_mdot:.1f}%\n$R^2$: {r2_mdot:.2f}")
 plt.tight_layout()
 plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\steady\TCHP_mdot_TC1.eps", format='eps', bbox_inches='tight')
 
@@ -253,7 +271,7 @@ plt.xlabel(r"Measured $\dot{Q}_\mathrm{k1}$ [kW]", fontsize=16)
 plt.ylabel(r"Predicted $\dot{Q}_\mathrm{k1}$ [kW]", fontsize=16)
 plt.xticks(fontsize=14); plt.yticks(fontsize=14)
 plt.legend(fontsize=14)
-_annotate_metrics(f"MAPE: {mape_pcl:.1f}%\nR$^2$: {r2_pcl:.2f}")
+_annotate_metrics(f"$MAPE$: {mape_pcl:.1f}%\n$R^2$: {r2_pcl:.2f}")
 plt.tight_layout()
 plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\steady\TCHP_Qcooler1.eps", format='eps', bbox_inches='tight')
 
@@ -268,7 +286,7 @@ plt.xlabel(r"Measured $T_\mathrm{tc1, dis}$ [°C]", fontsize=16)
 plt.ylabel(r"Predicted $T_\mathrm{tc1, dis}$ [°C]", fontsize=16)
 plt.xticks(fontsize=14); plt.yticks(fontsize=14)
 plt.legend(fontsize=14)
-_annotate_metrics(f"MAE: {mae_tout:.1f} K\nR$^2$: {r2_tout:.2f}")
+_annotate_metrics(f"$MAE$: {mae_tout:.1f} K\n$R^2$: {r2_tout:.2f}")
 plt.tight_layout()
 plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\steady\TCHP_T_TC1_out.eps", format='eps', bbox_inches='tight')
 

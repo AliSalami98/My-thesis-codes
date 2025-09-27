@@ -1,0 +1,4 @@
+{
+    "python.formatting.provider": "none",  // This disables any specific Python formatter.
+    "editor.formatOnSave": false           // Optional: Disable format on save.
+}

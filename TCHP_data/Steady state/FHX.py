@@ -6,6 +6,27 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_percentage_error, mean_absolute_error
 from scipy.optimize import curve_fit# Create an AbstractState object using the HEOS backend and CO2
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib import font_manager as fm
+import numpy as np
+
+# 1) Point to your installed file (from your screenshot)
+path = r"C:\Users\ali.salame\AppData\Local\Microsoft\Windows\Fonts\CHARTERBT-ROMAN.OTF"
+# (add the Bold/Italic too if you use them)
+# fm.fontManager.addfont(r"...\CHARTERBT-BOLD.OTF")
+# fm.fontManager.addfont(r"...\CHARTERBT-ITALIC.OTF")
+
+# 2) Register and use the exact internal name
+fm.fontManager.addfont(path)
+prop = fm.FontProperties(fname=path)
+mpl.rcParams["font.family"] = prop.get_name()   # e.g., "Bitstream Charter"
+mpl.rcParams["font.size"] = 11
+mpl.rcParams["axes.labelsize"] = 11
+mpl.rcParams["xtick.labelsize"] = 10
+mpl.rcParams["ytick.labelsize"] = 10
+mpl.rcParams["legend.fontsize"] = 10
+
 T0 = 298.15
 p0 = 101325
 state = AbstractState("HEOS", "CO2")

@@ -1,9 +1,26 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
 import os
 from scipy.interpolate import interp1d
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib import font_manager as fm
 import numpy as np
+
+# 1) Point to your installed file (from your screenshot)
+path = r"C:\Users\ali.salame\AppData\Local\Microsoft\Windows\Fonts\CHARTERBT-ROMAN.OTF"
+# (add the Bold/Italic too if you use them)
+# fm.fontManager.addfont(r"...\CHARTERBT-BOLD.OTF")
+# fm.fontManager.addfont(r"...\CHARTERBT-ITALIC.OTF")
+
+# 2) Register and use the exact internal name
+fm.fontManager.addfont(path)
+prop = fm.FontProperties(fname=path)
+mpl.rcParams["font.family"] = prop.get_name()   # e.g., "Bitstream Charter"
+mpl.rcParams["font.size"] = 11
+mpl.rcParams["axes.labelsize"] = 11
+mpl.rcParams["xtick.labelsize"] = 10
+mpl.rcParams["ytick.labelsize"] = 10
+mpl.rcParams["legend.fontsize"] = 10
 
 from data_filling_CFD import (
     Tc1,
@@ -33,7 +50,7 @@ from data_filling_CFD import (
     mout_dot1, 
 )
 # Load data
-csv_path = r'C:\Users\ali.salame\Desktop\plots\Thesis figs\TC_slow\CFD\a_variables.csv'
+csv_path = r'C:\Users\ali.salame\Desktop\plots\Thesis figs\TC_slow\CFD\first patch\a_variables.csv'
 df = pd.read_csv(csv_path, sep=',')
 
 
@@ -44,9 +61,9 @@ a_Tk = df['Tk [K]'].values - 273.15
 a_Tr = df['Tr [K]'].values - 273.15
 a_Th = df['Th [K]'].values - 273.15
 a_Te = df['Te [K]'].values - 273.15
-a_Tk_wall = df['Tk_wall [K]'].values - 273.15
-a_Tr_wall = df['Tr_wall [K]'].values - 273.15
-a_Th_wall = df['Th_wall [K]'].values - 273.15
+# a_Tk_wall = df['Tk_wall [K]'].values - 273.15
+# a_Tr_wall = df['Tr_wall [K]'].values - 273.15
+# a_Th_wall = df['Th_wall [K]'].values - 273.15
 
 a_pc = df['pc [pa]'].values
 a_pk = df['pk [pa]'].values
@@ -185,7 +202,7 @@ plt.xlabel("theta [°]", fontsize = 14)
 plt.ylabel("Temperature [°C]", fontsize = 14)
 plt.xticks(fontsize = 12)
 plt.yticks(fontsize = 12)
-plt.legend(loc = 'best')
+# plt.legend(loc = 'best')
 # plt.grid()
 plt.savefig(os.path.join(save_dir, "TC_T.eps"), format='eps')
 
@@ -230,22 +247,22 @@ plt.savefig(os.path.join(save_dir, "TC_mdot.eps"), format='eps')
 # Pressure comparison
 plt.figure(5)
 plt.plot(theta1, pc1, color='b', label="Cold cavity")
-# plt.plot(a_theta, a_pc, linestyle = '--', color='b')
-# plt.plot(theta1, pk1, color='cyan', label="Cooler")
-# plt.plot(a_theta, a_pk, linestyle = '--', color='cyan')
-# plt.plot(theta1, pr1, color='g', label="Regenerator")
-# plt.plot(a_theta, a_pr, linestyle = '--', color='g')
-# plt.plot(theta1, ph1, color='orange', label="Heater")
-# plt.plot(a_theta, a_ph, linestyle = '--', color='orange')
+plt.plot(a_theta, a_pc, linestyle = '--', color='b')
+plt.plot(theta1, pk1, color='cyan', label="Cooler")
+plt.plot(a_theta, a_pk, linestyle = '--', color='cyan')
+plt.plot(theta1, pr1, color='g', label="Regenerator")
+plt.plot(a_theta, a_pr, linestyle = '--', color='g')
+plt.plot(theta1, ph1, color='orange', label="Heater")
+plt.plot(a_theta, a_ph, linestyle = '--', color='orange')
 plt.plot(theta1, pe1, color='r', label="Hot cavity")
-# plt.plot(a_theta, a_pe, linestyle = '--', color='r')
+plt.plot(a_theta, a_pe, linestyle = '--', color='r')
 plt.xlabel("theta [°]", fontsize = 14)
 plt.ylabel("Pressure [bar]", fontsize = 14)
 plt.xticks(fontsize = 12)
 plt.yticks(fontsize = 12)
-plt.legend()
+# plt.legend()
 # plt.grid()
-# plt.savefig(os.path.join(save_dir, "TC_p.eps"), format='eps')
+plt.savefig(os.path.join(save_dir, "TC_p.eps"), format='eps')
 
 # Mass comparison
 plt.figure(6)
@@ -263,7 +280,7 @@ plt.xlabel("theta [°]", fontsize = 14)
 plt.ylabel("Mass [g]", fontsize = 14)
 plt.xticks(fontsize = 12)
 plt.yticks(fontsize = 12)
-# plt.legend()
+plt.legend()
 # plt.grid()
 plt.savefig(os.path.join(save_dir, "TC_m.eps"), format='eps')
 
@@ -354,24 +371,24 @@ plt.tight_layout()
 # ---- Save and Show ----
 plt.savefig(os.path.join(save_dir, "TC_p-V_tot.eps"), format='eps', dpi=300)
 
-plt.figure(8)
-plt.plot(theta1, Tk1, color='cyan', label="Cooler")
-plt.plot(a_theta, a_Tk,linestyle='--', color='cyan')
-plt.plot(a_theta, a_Tk_wall, linestyle='-.', color='cyan')
+# plt.figure(8)
+# plt.plot(theta1, Tk1, color='cyan', label="Cooler")
+# plt.plot(a_theta, a_Tk,linestyle='--', color='cyan')
+# plt.plot(a_theta, a_Tk_wall, linestyle='-.', color='cyan')
 
-plt.plot(theta1, Tr1, color='g', label="Regenerator")
-plt.plot(a_theta, a_Tr,linestyle='--', color='g')
-plt.plot(a_theta, a_Tr_wall,linestyle='-.', color='g')
+# plt.plot(theta1, Tr1, color='g', label="Regenerator")
+# plt.plot(a_theta, a_Tr,linestyle='--', color='g')
+# plt.plot(a_theta, a_Tr_wall,linestyle='-.', color='g')
 
-plt.plot(theta1, Th1, color='orange', label="Heater")
-plt.plot(a_theta, a_Th,linestyle='--', color='orange')
-plt.plot(a_theta, a_Th_wall,linestyle='-.', color='orange')
+# plt.plot(theta1, Th1, color='orange', label="Heater")
+# plt.plot(a_theta, a_Th,linestyle='--', color='orange')
+# plt.plot(a_theta, a_Th_wall,linestyle='-.', color='orange')
 
-plt.xlabel("theta [°]", fontsize = 14)
-plt.ylabel("Temperature [°C]", fontsize = 14)
-plt.xticks(fontsize = 12)
-plt.yticks(fontsize = 12)
-plt.legend(loc = 'best')
+# plt.xlabel("theta [°]", fontsize = 14)
+# plt.ylabel("Temperature [°C]", fontsize = 14)
+# plt.xticks(fontsize = 12)
+# plt.yticks(fontsize = 12)
+# plt.legend(loc = 'best')
 
 Dp_cfd = [(x - y) for x,y in zip(pc1, pe1)]
 Dp_model = [(x - y) for x,y in zip(a_pc, a_pe)]

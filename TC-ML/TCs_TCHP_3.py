@@ -9,6 +9,26 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 import os
 import joblib
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib import font_manager as fm
+import numpy as np
+
+# 1) Point to your installed file (from your screenshot)
+path = r"C:\Users\ali.salame\AppData\Local\Microsoft\Windows\Fonts\CHARTERBT-ROMAN.OTF"
+# (add the Bold/Italic too if you use them)
+# fm.fontManager.addfont(r"...\CHARTERBT-BOLD.OTF")
+# fm.fontManager.addfont(r"...\CHARTERBT-ITALIC.OTF")
+
+# 2) Register and use the exact internal name
+fm.fontManager.addfont(path)
+prop = fm.FontProperties(fname=path)
+mpl.rcParams["font.family"] = prop.get_name()   # e.g., "Bitstream Charter"
+mpl.rcParams["font.size"] = 11
+mpl.rcParams["axes.labelsize"] = 11
+mpl.rcParams["xtick.labelsize"] = 10
+mpl.rcParams["ytick.labelsize"] = 10
+mpl.rcParams["legend.fontsize"] = 10
 
 GP_models_dir = 'GP_models'
 models_GP = [joblib.load(os.path.join(GP_models_dir, f'GP_model_{i+1}.pkl')) for i in range(3)]
@@ -117,9 +137,9 @@ Qcooler2 = np.array(data['mdot [kg/s]']) * 1e3
 y2_2 = np.array(data['T2_out [K]']) - 273.15
 y2_3 = np.array(data['Pcooling2 [W]']) * 1e-3
 
-y3_1 = np.array(data['mdot [kg/s]'])
-y3_2 = np.array(data['T3_out [K]']) 
-y3_3 = np.array(data['Pcooling3 [W]'])
+y3_1 = np.array(data['mdot [kg/s]']) * 1e3
+y3_2 = np.array(data['T3_out [K]'])  - 273.15
+y3_3 = np.array(data['Pcooling3 [W]'])* 1e-3
 
 # y4 = np.array(data['Prec_total [W]'])
 # y4 = np.array(data['Pelec [W]'])
@@ -294,7 +314,7 @@ plt.xlabel(r"Measured $\dot{m}_\mathrm{tc2}$ [g/s]", fontsize=14)
 plt.ylabel(r"Predicted $\dot{m}_\mathrm{tc2}$ [g/s]", fontsize=14)
 plt.xticks(fontsize=12); plt.yticks(fontsize=12)
 plt.legend(fontsize=11)
-_annotate_metrics(f"MAPE: {mape_mdot_TC2:.1f}%\nR$^2$: {r2_mdot_TC2:.2f}")
+_annotate_metrics(f"$MAPE$: {mape_mdot_TC2:.1f}%\n$R^2$: {r2_mdot_TC2:.2f}")
 plt.tight_layout()
 plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\steady\TCHP_mdot_TC2.eps", format='eps', bbox_inches='tight')
 
@@ -309,7 +329,7 @@ plt.xlabel(r"Measured $\dot{Q}_\mathrm{k2}$ [kW]", fontsize=14)
 plt.ylabel(r"Predicted $\dot{Q}_\mathrm{k2}$ [kW]", fontsize=14)
 plt.xticks(fontsize=12); plt.yticks(fontsize=12)
 plt.legend(fontsize=11)
-_annotate_metrics(f"MAPE: {mape_Qcooler2:.1f}%\nR$^2$: {r2_Qcooler2:.2f}")
+_annotate_metrics(f"$MAPE$: {mape_Qcooler2:.1f}%\n$R^2$: {r2_Qcooler2:.2f}")
 plt.tight_layout()
 plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\steady\TCHP_Qcooler2.eps", format='eps', bbox_inches='tight')
 
@@ -324,7 +344,7 @@ plt.xlabel(r"Measured $T_\mathrm{tc2, dis}$ [°C]", fontsize=14)
 plt.ylabel(r"Predicted $T_\mathrm{tc2, dis}$ [°C]", fontsize=14)
 plt.xticks(fontsize=12); plt.yticks(fontsize=12)
 plt.legend(fontsize=11)
-_annotate_metrics(f"MAE: {mae_T_TC2_out:.1f} K\nR$^2$: {r2_T_TC2_out:.2f}")
+_annotate_metrics(f"$MAE$: {mae_T_TC2_out:.1f} K\n$R^2$: {r2_T_TC2_out:.2f}")
 plt.tight_layout()
 plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\steady\TCHP_T_TC2_out.eps", format='eps', bbox_inches='tight')
 
@@ -341,7 +361,7 @@ plt.xlabel(r"Measured $\dot{m}_\mathrm{tc3}$ [g/s]", fontsize=14)
 plt.ylabel(r"Predicted $\dot{m}_\mathrm{tc3}$ [g/s]", fontsize=14)
 plt.xticks(fontsize=12); plt.yticks(fontsize=12)
 plt.legend(fontsize=11)
-_annotate_metrics(f"MAPE: {mape_mdot_TC3:.1f}%\nR$^2$: {r2_mdot_TC3:.2f}")
+_annotate_metrics(f"$MAPE$: {mape_mdot_TC3:.1f}%\n$R^2$: {r2_mdot_TC3:.2f}")
 plt.tight_layout()
 plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\steady\TCHP_mdot_TC3.eps", format='eps', bbox_inches='tight')
 
@@ -356,7 +376,7 @@ plt.xlabel(r"Measured $\dot{Q}_\mathrm{k3}$ [kW]", fontsize=14)
 plt.ylabel(r"Predicted $\dot{Q}_\mathrm{k3}$ [kW]", fontsize=14)
 plt.xticks(fontsize=12); plt.yticks(fontsize=12)
 plt.legend(fontsize=11)
-_annotate_metrics(f"MAPE: {mape_Qcooler3:.1f}%\nR$^2$: {r2_Qcooler3:.2f}")
+_annotate_metrics(f"$MAPE$: {mape_Qcooler3:.1f}%\n$R^2$: {r2_Qcooler3:.2f}")
 plt.tight_layout()
 plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\steady\TCHP_Qcooler3.eps", format='eps', bbox_inches='tight')
 
@@ -371,7 +391,7 @@ plt.xlabel(r"Measured $T_\mathrm{tc3, dis}$ [°C]", fontsize=14)
 plt.ylabel(r"Predicted $T_\mathrm{tc3, dis}$ [°C]", fontsize=14)
 plt.xticks(fontsize=12); plt.yticks(fontsize=12)
 plt.legend(fontsize=11)
-_annotate_metrics(f"MAE: {mae_T_TC3_out:.1f} K\nR$^2$: {r2_T_TC3_out:.2f}")
+_annotate_metrics(f"$MAE$: {mae_T_TC3_out:.1f} K\n$R^2$: {r2_T_TC3_out:.2f}")
 plt.tight_layout()
 plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\steady\TCHP_T_TC3_out.eps", format='eps', bbox_inches='tight')
 

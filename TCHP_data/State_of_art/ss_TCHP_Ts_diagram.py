@@ -2,7 +2,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 import CoolProp.CoolProp as CP
 from CoolProp.CoolProp import AbstractState
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib import font_manager as fm
+import numpy as np
 
+# 1) Point to your installed file (from your screenshot)
+path = r"C:\Users\ali.salame\AppData\Local\Microsoft\Windows\Fonts\CHARTERBT-ROMAN.OTF"
+# (add the Bold/Italic too if you use them)
+# fm.fontManager.addfont(r"...\CHARTERBT-BOLD.OTF")
+# fm.fontManager.addfont(r"...\CHARTERBT-ITALIC.OTF")
+
+# 2) Register and use the exact internal name
+fm.fontManager.addfont(path)
+prop = fm.FontProperties(fname=path)
+mpl.rcParams["font.family"] = prop.get_name()   # e.g., "Bitstream Charter"
+mpl.rcParams["font.size"] = 11
+mpl.rcParams["axes.labelsize"] = 11
+mpl.rcParams["xtick.labelsize"] = 10
+mpl.rcParams["ytick.labelsize"] = 10
+mpl.rcParams["legend.fontsize"] = 10
 # ---------------------
 # Helper: interpolate between two h-p points for smooth plotting
 # ---------------------
@@ -97,13 +116,13 @@ for (h,p) in [(h1,p_low),(h2,p_high),(h3,p_high),(h4,p_low)]:
 
 plt.figure(figsize=(8,5))
 # Saturation dome
-plt.plot(s_liq, T_C, 'k-', linewidth=1, label='Saturation Curve', zorder=2)
+plt.plot(s_liq, T_C, 'k-', linewidth=1, label='Saturation curve', zorder=2)
 plt.plot(s_vap, T_C, 'k-', linewidth=1, zorder=2)
 
 # Cycle segments in green
 for s_seg, T_seg in segments:
     plt.plot(s_seg, T_seg, color='green', linewidth=2,
-             label='CO$_2$ Cycle' if 'plotted' not in locals() else None,
+             label='CO$_2$ cycle' if 'plotted' not in locals() else None,
              zorder=3)
     plotted = True
 
@@ -122,7 +141,7 @@ plt.text(cycle_pts[3][0] - 0.03, cycle_pts[3][1] + 1, "4",
          color='black', fontsize=12, weight='bold')
 
 # Labels & aesthetics
-plt.xlabel("Specific Entropy [kJ/kg·K]", fontsize=14)
+plt.xlabel(r"Specific entropy [kJ·kg$^{-1}$·K$^{-1}$]", fontsize=14)
 plt.ylabel("Temperature [°C]", fontsize=14)
 plt.xlim(1, 2)
 plt.ylim(0, 50)

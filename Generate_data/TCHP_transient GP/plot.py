@@ -9,7 +9,26 @@ from utils import (
 )
 from sklearn.metrics import r2_score, mean_absolute_error
 import config
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib import font_manager as fm
+import numpy as np
 
+# 1) Point to your installed file (from your screenshot)
+path = r"C:\Users\ali.salame\AppData\Local\Microsoft\Windows\Fonts\CHARTERBT-ROMAN.OTF"
+# (add the Bold/Italic too if you use them)
+# fm.fontManager.addfont(r"...\CHARTERBT-BOLD.OTF")
+# fm.fontManager.addfont(r"...\CHARTERBT-ITALIC.OTF")
+
+# 2) Register and use the exact internal name
+fm.fontManager.addfont(path)
+prop = fm.FontProperties(fname=path)
+mpl.rcParams["font.family"] = prop.get_name()   # e.g., "Bitstream Charter"
+mpl.rcParams["font.size"] = 11
+mpl.rcParams["axes.labelsize"] = 11
+mpl.rcParams["xtick.labelsize"] = 10
+mpl.rcParams["ytick.labelsize"] = 10
+mpl.rcParams["legend.fontsize"] = 10
 def calculate_r2_mape(simulated, experimental):
     r2 = r2_score(experimental, simulated)
     mape = np.mean(np.abs((experimental - simulated) / experimental)) * 100
@@ -30,7 +49,7 @@ def calculate_r2_mae(simulated, experimental):
 #         averaged_list.append(sum(subset) / len(subset))
 #     return averaged_list
 # ===== Load saved CSV =====
-input_path = os.path.join(os.path.dirname(__file__), "LPV2.csv")
+input_path = os.path.join(os.path.dirname(__file__), "HPV.csv")
 # Load CSV into DataFrame
 df = pd.read_csv(input_path)
 
@@ -359,8 +378,8 @@ ax4.legend(fontsize=12)
 #             edgecolor='0.3', fontsize=12)
 
 fig1.tight_layout()
-# fig1.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\transient\TCHP_LPV.eps", 
-#             format='eps', bbox_inches='tight')
+fig1.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\transient\TCHP_HPV.eps", 
+            format='eps', bbox_inches='tight')
 
 # # --- Plot 2: Power & COP ---
 # fig2, (ax5, ax6, ax7) = plt.subplots(3, 1, figsize=(10, 6))

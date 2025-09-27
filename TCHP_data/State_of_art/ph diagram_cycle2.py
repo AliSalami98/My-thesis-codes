@@ -2,7 +2,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 import CoolProp.CoolProp as CP
 from CoolProp.CoolProp import AbstractState
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib import font_manager as fm
+import numpy as np
 
+# 1) Point to your installed file (from your screenshot)
+path = r"C:\Users\ali.salame\AppData\Local\Microsoft\Windows\Fonts\CHARTERBT-ROMAN.OTF"
+# (add the Bold/Italic too if you use them)
+# fm.fontManager.addfont(r"...\CHARTERBT-BOLD.OTF")
+# fm.fontManager.addfont(r"...\CHARTERBT-ITALIC.OTF")
+
+# 2) Register and use the exact internal name
+fm.fontManager.addfont(path)
+prop = fm.FontProperties(fname=path)
+mpl.rcParams["font.family"] = prop.get_name()   # e.g., "Bitstream Charter"
+mpl.rcParams["font.size"] = 11
+mpl.rcParams["axes.labelsize"] = 11
+mpl.rcParams["xtick.labelsize"] = 10
+mpl.rcParams["ytick.labelsize"] = 10
+mpl.rcParams["legend.fontsize"] = 10
 # ---------------------------------------
 # 1. Create and configure CO₂ state
 # ---------------------------------------
@@ -154,7 +173,7 @@ for idx in [2, 3]:  # Points 3 and 4
 # plt.text(mid_h3, pressure_cycle1[2]+2, r'$\Delta h_3$', color='red', fontsize=12, ha='center')
 
 
-plt.xlabel("Specific enthalpy [kJ/kg]", fontsize=16)
+plt.xlabel(r"Specific enthalpy [kJ.kg$^{-1}$]", fontsize=16)
 plt.ylabel("Pressure [bar]", fontsize=16)
 plt.xlim([180, 520])
 plt.ylim([20, 100])

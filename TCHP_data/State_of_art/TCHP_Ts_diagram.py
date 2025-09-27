@@ -14,7 +14,26 @@ def interpolate_curve(h_start, p_start, h_end, p_end, n):
         s_list.append(state.smass() / 1e3)
         T_list.append(state.T() - 273.15)
     return s_list, T_list
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib import font_manager as fm
+import numpy as np
 
+# 1) Point to your installed file (from your screenshot)
+path = r"C:\Users\ali.salame\AppData\Local\Microsoft\Windows\Fonts\CHARTERBT-ROMAN.OTF"
+# (add the Bold/Italic too if you use them)
+# fm.fontManager.addfont(r"...\CHARTERBT-BOLD.OTF")
+# fm.fontManager.addfont(r"...\CHARTERBT-ITALIC.OTF")
+
+# 2) Register and use the exact internal name
+fm.fontManager.addfont(path)
+prop = fm.FontProperties(fname=path)
+mpl.rcParams["font.family"] = prop.get_name()   # e.g., "Bitstream Charter"
+mpl.rcParams["font.size"] = 11
+mpl.rcParams["axes.labelsize"] = 11
+mpl.rcParams["xtick.labelsize"] = 10
+mpl.rcParams["ytick.labelsize"] = 10
+mpl.rcParams["legend.fontsize"] = 10
 # ---------------------
 # 1. Setup fluid and state
 # ---------------------
@@ -141,7 +160,7 @@ for s, T in Ts_cycle:
 # plt.plot(s_water, T_water, 'b--', linewidth=2, label='Water Heating')
 
 # 6. Aesthetics
-plt.xlabel("Specific entropy [kJ/kg·K]", fontsize=16)
+plt.xlabel(r"Specific entropy [kJ·kg$^{-1}$·K$^{-1}$]", fontsize=16)
 plt.ylabel("Temperature [°C]", fontsize=16)
 plt.xlim(1, 2.1)
 plt.ylim(-10, 90)
@@ -152,5 +171,5 @@ plt.legend(loc='upper left', fontsize=14)
 plt.tight_layout()
 
 # Save figure
-plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\State_of_art\TCHP_Ts_with_water.eps", format='eps')
+plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\State_of_art\TCHP_Ts.eps", format='eps')
 plt.show()

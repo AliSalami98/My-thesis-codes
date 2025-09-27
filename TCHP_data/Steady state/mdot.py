@@ -3,7 +3,26 @@ from CoolProp.CoolProp import AbstractState
 import CoolProp.CoolProp as CP
 import csv
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib import font_manager as fm
+import numpy as np
 
+# 1) Point to your installed file (from your screenshot)
+path = r"C:\Users\ali.salame\AppData\Local\Microsoft\Windows\Fonts\CHARTERBT-ROMAN.OTF"
+# (add the Bold/Italic too if you use them)
+# fm.fontManager.addfont(r"...\CHARTERBT-BOLD.OTF")
+# fm.fontManager.addfont(r"...\CHARTERBT-ITALIC.OTF")
+
+# 2) Register and use the exact internal name
+fm.fontManager.addfont(path)
+prop = fm.FontProperties(fname=path)
+mpl.rcParams["font.family"] = prop.get_name()   # e.g., "Bitstream Charter"
+mpl.rcParams["font.size"] = 11
+mpl.rcParams["axes.labelsize"] = 11
+mpl.rcParams["xtick.labelsize"] = 10
+mpl.rcParams["ytick.labelsize"] = 10
+mpl.rcParams["legend.fontsize"] = 10
 # Create an AbstractState object using the HEOS backend and CO2
 state = AbstractState("HEOS", "CO2")
 
@@ -288,7 +307,7 @@ fHPV1_all  = np.asarray(f_HPV1)         # only for Hpev <= split
 fHPV2_all  = np.asarray(f_HPV2)         # only for Hpev >  split
 
 # --- Choose the split used when you filled f_HPV1 / f_HPV2 ---
-HPEV_SPLIT = 100   # <-- set this to the exact threshold you used when appending
+HPEV_SPLIT = 50  # <-- set this to the exact threshold you used when appending
 
 # --- Masks on the master Hpev array ---
 mask1 = Hpev_all <= HPEV_SPLIT
@@ -301,13 +320,11 @@ y1 = fHPV1_all
 y2 = fHPV2_all
 
 # --- Fit separate polynomials (degree per your choice; here deg=1) ---
-deg1, deg2 = 1, 1
+deg1, deg2 = 3, 3
 coef_HPV1 = np.polyfit(x1, y1, deg1)
 coef_HPV2 = np.polyfit(x2, y2, deg2)
 poly_HPV1 = np.poly1d(coef_HPV1)
 poly_HPV2 = np.poly1d(coef_HPV2)
-print(coef_HPV1)
-print(coef_HPV2)
 # --- Piecewise prediction of f_HPV over ALL samples ---
 fHPV_pred = np.empty_like(Hpev_all, dtype=float)
 fHPV_pred[mask1] = poly_HPV1(Hpev_all[mask1])
@@ -334,7 +351,7 @@ plt.plot(yt_sorted, 1.1*yt_sorted, "--", c="b")
 
 plt.scatter(yt, yp, s=50, edgecolor="red", facecolor="lightgrey",
             label="Simulated", linewidths=2.0)
-_annotate_metrics(f"MAPE: {mape_hpv:.1f}%\nR$^2$: {r2_hpv:.3f}")
+_annotate_metrics(f"$MAPE$: {mape_hpv:.1f}%\n$R^2$: {r2_hpv:.3f}")
 plt.xlabel(r"Measured $\dot{m}_\mathrm{hpv}$ [g/s]", fontsize=14)
 plt.ylabel(r"Predicted $\dot{m}_\mathrm{hpv}$ [g/s]", fontsize=14)
 plt.xticks(fontsize=12); plt.yticks(fontsize=12)
@@ -361,7 +378,7 @@ y1 = fLPV1_all
 y2 = fLPV2_all
 
 # --- Fit separate polynomials (choose degree as you like; here deg=3) ---
-deg1, deg2 = 2, 2
+deg1, deg2 = 3, 3
 coef_LPV1 = np.polyfit(x1, y1, deg1)
 coef_LPV2 = np.polyfit(x2, y2, deg2)
 poly_LPV1 = np.poly1d(coef_LPV1)
@@ -399,7 +416,7 @@ plt.xlabel(r"Measured $\dot{m}_\mathrm{lpv}$ [g/s]", fontsize=14)
 plt.ylabel(r"Predicted $\dot{m}_\mathrm{lpv}$ [g/s]", fontsize=14)
 plt.xticks(fontsize=12); plt.yticks(fontsize=12)
 plt.legend(fontsize=11)
-_annotate_metrics(f"MAPE: {mape_lpv:.1f}%\nR$^2$: {r2_lpv:.3f}")
+_annotate_metrics(f"$MAPE$: {mape_lpv:.1f}%\n$R^2$: {r2_lpv:.3f}")
 plt.tight_layout()
 plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\steady\TCHP_mdot_lpv.eps", format='eps', bbox_inches='tight')
 
@@ -438,7 +455,7 @@ plt.show()
 # # Show both independent figures
 # plt.show()
 
-# print(f"MAPE — HPV: {mape_hpv:.2f}% | LPV: {mape_lpv:.2f}%")
+# print(f"$MAPE$ — HPV: {mape_hpv:.2f}% | LPV: {mape_lpv:.2f}%")
 
 
 # hpv_values = np.array(a_Hpev)  # assuming a_mf_dot corresponds to HPV

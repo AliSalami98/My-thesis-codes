@@ -9,7 +9,26 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from data_filling import train_data, test_data
 from sklearn.metrics import mean_squared_error, mean_absolute_percentage_error, r2_score
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib import font_manager as fm
+import numpy as np
 
+# 1) Point to your installed file (from your screenshot)
+path = r"C:\Users\ali.salame\AppData\Local\Microsoft\Windows\Fonts\CHARTERBT-ROMAN.OTF"
+# (add the Bold/Italic too if you use them)
+# fm.fontManager.addfont(r"...\CHARTERBT-BOLD.OTF")
+# fm.fontManager.addfont(r"...\CHARTERBT-ITALIC.OTF")
+
+# 2) Register and use the exact internal name
+fm.fontManager.addfont(path)
+prop = fm.FontProperties(fname=path)
+mpl.rcParams["font.family"] = prop.get_name()   # e.g., "Bitstream Charter"
+mpl.rcParams["font.size"] = 11
+mpl.rcParams["axes.labelsize"] = 11
+mpl.rcParams["xtick.labelsize"] = 10
+mpl.rcParams["ytick.labelsize"] = 10
+mpl.rcParams["legend.fontsize"] = 10
 # Set random seeds for reproducibility
 torch.manual_seed(42)  # Seed for PyTorch (affects model initialization)
 np.random.seed(42)     # Seed for NumPy (affects any NumPy random operations)
@@ -170,181 +189,181 @@ scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0
 import time
 start_time = time.time()
 
-# ------------------------
-# Training Loop with Early Stopping
-# ------------------------
-best_val_loss = float('inf')
-patience = 30  # Number of epochs to wait for improvement
-patience_counter = 0
-train_losses = []
-val_losses = []
-min_delta = 1e-6
+# # ------------------------
+# # Training Loop with Early Stopping
+# # ------------------------
+# best_val_loss = float('inf')
+# patience = 30  # Number of epochs to wait for improvement
+# patience_counter = 0
+# train_losses = []
+# val_losses = []
+# min_delta = 1e-6
 
-for epoch in range(num_epochs):
-    model.train()
-    total_train_loss = 0.0
-    if use_batch:  # Batch processing
-        for X_train_batch, U_train_batch, y_train_batch in train_loader:
-            optimizer.zero_grad()
-            outputs = model(X_train_batch, U_train_batch)
-            loss = criterion(outputs, y_train_batch)
-            loss.backward()
-            optimizer.step()
-            total_train_loss += loss.item() * X_train_batch.size(0)
-        train_loss = total_train_loss / len(train_dataset)
-    else:  # Non-batch processing
-        optimizer.zero_grad()
-        outputs = model(X_train_tensor, U_train_tensor)
-        loss = criterion(outputs, y_train_tensor)
-        loss.backward()
-        optimizer.step()
-        train_loss = loss.item()
+# for epoch in range(num_epochs):
+#     model.train()
+#     total_train_loss = 0.0
+#     if use_batch:  # Batch processing
+#         for X_train_batch, U_train_batch, y_train_batch in train_loader:
+#             optimizer.zero_grad()
+#             outputs = model(X_train_batch, U_train_batch)
+#             loss = criterion(outputs, y_train_batch)
+#             loss.backward()
+#             optimizer.step()
+#             total_train_loss += loss.item() * X_train_batch.size(0)
+#         train_loss = total_train_loss / len(train_dataset)
+#     else:  # Non-batch processing
+#         optimizer.zero_grad()
+#         outputs = model(X_train_tensor, U_train_tensor)
+#         loss = criterion(outputs, y_train_tensor)
+#         loss.backward()
+#         optimizer.step()
+#         train_loss = loss.item()
 
-    # Validation loss
-    model.eval()
-    with torch.no_grad():
-        if use_batch:  # Batch processing for validation
-            total_val_loss = 0.0
-            for X_val_batch, U_val_batch, y_val_batch in val_loader:
-                val_outputs = model(X_val_batch, U_val_batch)
-                val_loss = criterion(val_outputs, y_val_batch)
-                total_val_loss += val_loss.item() * X_val_batch.size(0)
-            val_loss = total_val_loss / len(val_dataset)
-        else:  # Non-batch processing for validation
-            val_outputs = model(X_val_tensor, U_val_tensor)
-            val_loss = criterion(val_outputs, y_val_tensor).item()
+#     # Validation loss
+#     model.eval()
+#     with torch.no_grad():
+#         if use_batch:  # Batch processing for validation
+#             total_val_loss = 0.0
+#             for X_val_batch, U_val_batch, y_val_batch in val_loader:
+#                 val_outputs = model(X_val_batch, U_val_batch)
+#                 val_loss = criterion(val_outputs, y_val_batch)
+#                 total_val_loss += val_loss.item() * X_val_batch.size(0)
+#             val_loss = total_val_loss / len(val_dataset)
+#         else:  # Non-batch processing for validation
+#             val_outputs = model(X_val_tensor, U_val_tensor)
+#             val_loss = criterion(val_outputs, y_val_tensor).item()
 
-    # Store losses for plotting
-    train_losses.append(train_loss)
-    val_losses.append(val_loss)
-    val_loss_denorm = val_loss * (scaler_output.scale_ ** 2).mean()
-    # Early stopping
-    if val_loss < best_val_loss:
-        best_val_loss = val_loss
-        patience_counter = 0
-        torch.save(model.state_dict(), "best_RNN_model.pth")  # Save best model
-    # else:
-    #     patience_counter += 1
-    #     if patience_counter >= patience:
-    #         print(f"Early stopping triggered after epoch {epoch + 1}")
-    #         break
+#     # Store losses for plotting
+#     train_losses.append(train_loss)
+#     val_losses.append(val_loss)
+#     val_loss_denorm = val_loss * (scaler_output.scale_ ** 2).mean()
+#     # Early stopping
+#     if val_loss < best_val_loss:
+#         best_val_loss = val_loss
+#         patience_counter = 0
+#         torch.save(model.state_dict(), "best_RNN_model.pth")  # Save best model
+#     # else:
+#     #     patience_counter += 1
+#     #     if patience_counter >= patience:
+#     #         print(f"Early stopping triggered after epoch {epoch + 1}")
+#     #         break
 
-    scheduler.step(val_loss)  # Adjust learning rate based on validation loss
+#     scheduler.step(val_loss)  # Adjust learning rate based on validation loss
 
-    if (epoch + 1) % 10 == 0:
-        print(f"Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")
+#     if (epoch + 1) % 10 == 0:
+#         print(f"Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")
 
-end_time = time.time()
-elapsed_time = end_time - start_time
-print(f"Training completed in {elapsed_time:.2f} seconds ({elapsed_time/60:.2f} minutes)")
-# Load the best model
-model.load_state_dict(torch.load("best_RNN_model.pth"))
+# end_time = time.time()
+# elapsed_time = end_time - start_time
+# print(f"Training completed in {elapsed_time:.2f} seconds ({elapsed_time/60:.2f} minutes)")
+# # Load the best model
+# model.load_state_dict(torch.load("best_RNN_model.pth"))
 
-# ------------------------
-# Professional Plot: Training & Validation Loss
-# ------------------------
-import matplotlib.ticker as ticker
+# # ------------------------
+# # Professional Plot: Training & Validation Loss
+# # ------------------------
+# import matplotlib.ticker as ticker
 
-plt.figure(figsize=(8, 5))
-plt.plot(train_losses, label="Training Loss", linewidth=2.5, color="steelblue")
-plt.plot(val_losses, label="Validation Loss", linewidth=2.5, color="darkorange", linestyle="--")
+# plt.figure(figsize=(8, 5))
+# plt.plot(train_losses, label="Training Loss", linewidth=2.5, color="steelblue")
+# plt.plot(val_losses, label="Validation Loss", linewidth=2.5, color="darkorange", linestyle="--")
 
-plt.xlabel("Epoch", fontsize=14)
-plt.ylabel("MSE Loss", fontsize=14)
-# plt.title("Training and Validation Loss", fontsize=16)
-plt.legend(loc="upper right", fontsize=12, frameon=False)
+# plt.xlabel("Epoch", fontsize=14)
+# plt.ylabel("MSE Loss", fontsize=14)
+# # plt.title("Training and Validation Loss", fontsize=16)
+# plt.legend(loc="upper right", fontsize=12, frameon=False)
 
-# Improve tick formatting
-plt.xticks(fontsize=14)
-plt.yticks(fontsize=14)
-plt.gca().xaxis.set_major_locator(ticker.MaxNLocator(integer=True))  # integer ticks for epochs
-plt.grid(True, which='major', linestyle=':', linewidth=1, alpha=0.7)
+# # Improve tick formatting
+# plt.xticks(fontsize=14)
+# plt.yticks(fontsize=14)
+# plt.gca().xaxis.set_major_locator(ticker.MaxNLocator(integer=True))  # integer ticks for epochs
+# plt.grid(True, which='major', linestyle=':', linewidth=1, alpha=0.7)
 
-# Tight layout for articles
-plt.tight_layout()
+# # Tight layout for articles
+# plt.tight_layout()
 
-plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\control\RNN_training.eps", format='eps', bbox_inches='tight')
+# plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\control\RNN_training.eps", format='eps', bbox_inches='tight')
 
-plt.show()
-# ------------------------
-# Evaluation Loop
-# ------------------------
-model.eval()
-with torch.no_grad():
-    train_predictions = model(X_train_tensor, U_train_tensor)
-    train_loss = criterion(train_predictions, y_train_tensor).item()
+# plt.show()
+# # ------------------------
+# # Evaluation Loop
+# # ------------------------
+# model.eval()
+# with torch.no_grad():
+#     train_predictions = model(X_train_tensor, U_train_tensor)
+#     train_loss = criterion(train_predictions, y_train_tensor).item()
 
-    val_predictions = model(X_val_tensor, U_val_tensor)
-    val_loss = criterion(val_predictions, y_val_tensor).item()
+#     val_predictions = model(X_val_tensor, U_val_tensor)
+#     val_loss = criterion(val_predictions, y_val_tensor).item()
 
-    test_predictions = model(X_test_tensor, U_test_tensor)
-    test_loss = criterion(test_predictions, y_test_tensor).item()
+#     test_predictions = model(X_test_tensor, U_test_tensor)
+#     test_loss = criterion(test_predictions, y_test_tensor).item()
 
-print(f"Training MSE: {train_loss:.4f}")
-print(f"Validation MSE: {val_loss:.4f}")
-print(f"Test MSE: {test_loss:.4f}")
+# print(f"Training MSE: {train_loss:.4f}")
+# print(f"Validation MSE: {val_loss:.4f}")
+# print(f"Test MSE: {test_loss:.4f}")
 
-# ------------------------
-# Save the Model and Scalers
-# ------------------------
-torch.save(model.state_dict(), "RNN_Johan3/rnn_model.pth")
-joblib.dump(scaler_input, "RNN_Johan3/scaler_input.pkl")
-joblib.dump(scaler_output, "RNN_Johan3/scaler_output.pkl")
+# # ------------------------
+# # Save the Model and Scalers
+# # ------------------------
+# torch.save(model.state_dict(), "RNN_Johan/rnn_model.pth")
+# joblib.dump(scaler_input, "RNN_Johan/scaler_input.pkl")
+# joblib.dump(scaler_output, "RNN_Johan/scaler_output.pkl")
 
-print("Model and scalers saved.")
+# print("Model and scalers saved.")
 
-with torch.no_grad():
-    test_predictions = model(X_test_tensor, U_test_tensor)
+# with torch.no_grad():
+#     test_predictions = model(X_test_tensor, U_test_tensor)
     
-# Denormalize only the last predicted step
-test_predictions_last = test_predictions[:, -1, :].numpy()
-y_test_true_last = y_test_seq[:, -1, :]
+# # Denormalize only the last predicted step
+# test_predictions_last = test_predictions[:, -1, :].numpy()
+# y_test_true_last = y_test_seq[:, -1, :]
 
-test_predictions_denorm = scaler_output.inverse_transform(test_predictions_last)
-y_test_denorm = scaler_output.inverse_transform(y_test_true_last)
+# test_predictions_denorm = scaler_output.inverse_transform(test_predictions_last)
+# y_test_denorm = scaler_output.inverse_transform(y_test_true_last)
 
-# ------------------------
-# Evaluate
-# ------------------------
-def calculate_metrics(y_true, y_pred):
-    mse = mean_squared_error(y_true, y_pred)
-    mape = mean_absolute_percentage_error(y_true, y_pred) * 100
-    r2 = r2_score(y_true, y_pred)
-    return mse, mape, r2
+# # ------------------------
+# # Evaluate
+# # ------------------------
+# def calculate_metrics(y_true, y_pred):
+#     mse = mean_squared_error(y_true, y_pred)
+#     mape = mean_absolute_percentage_error(y_true, y_pred) * 100
+#     r2 = r2_score(y_true, y_pred)
+#     return mse, mape, r2
 
 
-mse_Tw_out, mape_Tw_out, r2_Tw_out = calculate_metrics(y_test_denorm[:, 0], test_predictions_denorm[:, 0])
-# mse_Tw_out, mape_Tw_out, r2_Tw_out = calculate_metrics(y_test_denorm[:, 1], test_predictions_denorm[:, 1])
+# mse_Tw_out, mape_Tw_out, r2_Tw_out = calculate_metrics(y_test_denorm[:, 0], test_predictions_denorm[:, 0])
+# # mse_Tw_out, mape_Tw_out, r2_Tw_out = calculate_metrics(y_test_denorm[:, 1], test_predictions_denorm[:, 1])
 
-# ------------------------
-# Plot
-# ------------------------
-fig, ax = plt.subplots(1, 1, figsize=(14, 10), sharex=True)
+# # ------------------------
+# # Plot
+# # ------------------------
+# fig, ax = plt.subplots(1, 1, figsize=(14, 10), sharex=True)
 
-y_true_C = y_test_denorm[:, 0] - 273.15
-y_pred_C = test_predictions_denorm[:, 0] - 273.15
-# Plot Water Outlet Temperature
-ax.plot(y_true_C, label="Real + physical model data", color="blue", linewidth=2)
-ax.plot(y_pred_C,
-           label=f"RNN Prediction (MSE: {mse_Tw_out:.2f} K², R²: {r2_Tw_out:.3f})",
-           linestyle="dashed", color="orange", linewidth=2)
-ax.set_xlabel("Time [s]", fontsize=14)
-ax.set_ylabel("$T_\text{w, out}$ [°C]", fontsize=14)
-ax.legend(loc="upper left", fontsize=12)
-ax.tick_params(axis="both", labelsize=12)
-ax.grid(True)
+# y_true_C = y_test_denorm[:, 0] - 273.15
+# y_pred_C = test_predictions_denorm[:, 0] - 273.15
+# # Plot Water Outlet Temperature
+# ax.plot(y_true_C, label="Real + physical model data", color="blue", linewidth=2)
+# ax.plot(y_pred_C,
+#            label=f"RNN Prediction ($MSE$: {mse_Tw_out:.2f} K², R²: {r2_Tw_out:.3f})",
+#            linestyle="dashed", color="orange", linewidth=2)
+# ax.set_xlabel("Time [s]", fontsize=14)
+# ax.set_ylabel("$T_\text{w, out}$ [°C]", fontsize=14)
+# ax.legend(loc="upper left", fontsize=12)
+# ax.tick_params(axis="both", labelsize=12)
+# ax.grid(True)
 
-plt.tight_layout()
-plt.show()
+# plt.tight_layout()
+# plt.show()
 
 
 
 model = RNNCellModel(input_size, hidden_size, output_size, num_layers)
-model.load_state_dict(torch.load("RNN_Johan3/rnn_model.pth"))
+model.load_state_dict(torch.load("RNN_Johan/rnn_model.pth"))
 model.eval()
 
-scaler_input = joblib.load("RNN_Johan3/scaler_input.pkl")
-scaler_output = joblib.load("RNN_Johan3/scaler_output.pkl")
+scaler_input = joblib.load("RNN_Johan/scaler_input.pkl")
+scaler_output = joblib.load("RNN_Johan/scaler_output.pkl")
 model.eval()
 with torch.no_grad():
     val_predictions = model(X_val_tensor, U_val_tensor)
@@ -467,7 +486,7 @@ for cycle in range(cycles):
         all_time_steps[cycle_start:input_end],
         model_Tw_out[cycle_start:input_end],
         color="green", linewidth=3, linestyle="-", marker='o', markersize=5,
-        label=r"RNN input $T_\text{w, sup}$" if cycle == 0 else "", zorder=3
+        label=r"Vanilla RNN input $T_\text{w, sup}$" if cycle == 0 else "", zorder=3
     )
 
     # Predicted segment (orange)
@@ -475,7 +494,7 @@ for cycle in range(cycles):
         all_time_steps[input_end:pred_end],
         model_Tw_out[input_end:pred_end],
         color="orange", linewidth=2, linestyle="--",
-        label=rf"RNN predicted $T_{{\mathrm{{w,\,sup}}}}$ (MSE: {mse_Tw_out:.2f} $\mathrm{{K}}^2$, R$^2$: {r2_Tw_out:.3f})" if cycle == 0 else "", zorder=2
+        label=rf"Vanilla RNN predicted $T_{{\mathrm{{w,\,sup}}}}$ ($MSE$: {mse_Tw_out:.2f} $\mathrm{{K}}^2$, $R^2$: {r2_Tw_out:.3f})" if cycle == 0 else "", zorder=2
     )
 
 # True data (blue dashed)
@@ -500,7 +519,7 @@ for cycle in range(cycles):
     boundary = (cycle + 1) * sequence_length + cycle * prediction_length
     ax.axvline(x=boundary, color='k', linewidth=2, linestyle=':', label="Input/prediction boundary" if cycle == 0 else "")
 
-ax.set_ylabel(r"Supply water temperature $T_\text{w, sup}$ [°C]", fontsize=16)
+ax.set_ylabel(r"$T_\text{w, sup}$ [°C]", fontsize=16)
 ax.set_xlabel("Time [s]", fontsize=16)
 ax.legend(loc="upper left", fontsize=14)
 # ax.grid(True)

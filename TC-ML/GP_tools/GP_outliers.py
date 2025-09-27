@@ -14,7 +14,26 @@ from sklearn.gaussian_process.kernels import RBF, WhiteKernel
 from sklearn.metrics import mean_absolute_percentage_error, r2_score, root_mean_squared_error
 import joblib
 import os
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib import font_manager as fm
+import numpy as np
 
+# 1) Point to your installed file (from your screenshot)
+path = r"C:\Users\ali.salame\AppData\Local\Microsoft\Windows\Fonts\CHARTERBT-ROMAN.OTF"
+# (add the Bold/Italic too if you use them)
+# fm.fontManager.addfont(r"...\CHARTERBT-BOLD.OTF")
+# fm.fontManager.addfont(r"...\CHARTERBT-ITALIC.OTF")
+
+# 2) Register and use the exact internal name
+fm.fontManager.addfont(path)
+prop = fm.FontProperties(fname=path)
+mpl.rcParams["font.family"] = prop.get_name()   # e.g., "Bitstream Charter"
+mpl.rcParams["font.size"] = 11
+mpl.rcParams["axes.labelsize"] = 11
+mpl.rcParams["xtick.labelsize"] = 10
+mpl.rcParams["ytick.labelsize"] = 10
+mpl.rcParams["legend.fontsize"] = 10
 # -------------------------
 # 2. SETUP CO2 REFERENCE STATE
 # -------------------------
@@ -257,7 +276,7 @@ def plot_unscaled_outliers(y_true_real, y_pred_real, y_std_real, outlier_mask, l
 
     ci_percent = int((norm.cdf(z_threshold) - norm.cdf(-z_threshold)) * 100)
     plt.fill_between(x, y_pred_real - z_threshold * y_std_real, y_pred_real + z_threshold * y_std_real,
-                     color='lightgray', label=f'{ci_percent}% Confidence Interval')
+                     color='lightgray', label=f'{ci_percent}% Confidence interval')
 
     plt.plot(x, y_pred_real, 'k-', label='GP fit', linewidth=2)
     plt.scatter(x[~outlier_mask], y_true_real[~outlier_mask], color='blue', s=40, label='Normal')
@@ -268,7 +287,7 @@ def plot_unscaled_outliers(y_true_real, y_pred_real, y_std_real, outlier_mask, l
             plt.annotate('', xy=(xi, yt), xytext=(xi, yp),
                          arrowprops=dict(arrowstyle='->', color='gray', lw=1.5))
 
-    plt.xlabel("Sample Index", fontsize=14)
+    plt.xlabel("Sample index", fontsize=14)
     plt.ylabel(f"{label} {unit}", fontsize=14)
     plt.tick_params(axis='both', which='major', labelsize=12)
     if filename == 'Qheater_outliers':

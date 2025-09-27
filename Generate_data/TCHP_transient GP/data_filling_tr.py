@@ -36,8 +36,8 @@ d_error = []
 i = 0
 step_counter = 0
 # Read the CSV file
-with open(r'C:\Users\ali.salame\Desktop\Thermodynamics\data files\control tests\all in\LPV PRBS.csv') as csv_file:
-# with open(r'C:\Users\ali.salame\Desktop\Thermodynamics\data files\control tests\all in\HPV PRBS.csv') as csv_file:
+# with open(r'C:\Users\ali.salame\Desktop\Thermodynamics\data files\control tests\all in\LPV PRBS.csv') as csv_file:
+with open(r'C:\Users\ali.salame\Desktop\Thermodynamics\data files\control tests\all in\HPV PRBS.csv') as csv_file:
 # with open(r'C:\Users\ali.salame\Desktop\Thermodynamics\data files\control tests\all in\bf step.csv') as csv_file: #(For this step make sure step_counter is incremented)
 # with open(r'C:\Users\ali.salame\Desktop\Thermodynamics\data files\control tests\all in\Tw step.csv') as csv_file:
 # with open(r'C:\Users\ali.salame\Desktop\Thermodynamics\data files\control tests\all in\mw step.csv') as csv_file:

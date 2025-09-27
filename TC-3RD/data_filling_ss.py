@@ -24,7 +24,7 @@ a_Theater = []
 a_Pr = []
 a_pcharged = []
 a_omega = []
-with open(r'C:\Users\ali.salame\Desktop\Thermodynamics\data files\results\data_omega_Pr_comp.csv') as csv_file:    
+with open(r'C:\Users\ali.salame\Desktop\Thermodynamics\data files\results\data_pcharged_Pr_comp.csv') as csv_file:    
     csv_reader = csv.DictReader(csv_file, delimiter = ';')
     for row in csv_reader:
         data['Tsuc [K]'].append(float(row['Tsuc [°C]']) + 273.15)
