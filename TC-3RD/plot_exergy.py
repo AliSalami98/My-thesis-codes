@@ -3,80 +3,103 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
+# ------------------------------
+# User controls
+# ------------------------------
+sweep_key = 'Theater'   # <- choose: 'omega', 'pcharged', or 'Theater'
+base_dir  = r'C:\Users\ali.salame\Desktop\plots\Thesis figs\TC_slow\Exergy\first patch'
+csv_path  = os.path.join(base_dir, f"Results_{sweep_key}.csv")
+save_dir  = os.path.dirname(csv_path)
+
+# ------------------------------
 # Load data
-csv_path = r'C:\Users\ali.salame\Desktop\plots\Thesis figs\TC_slow\Exergy\Results_Theater.csv'
-df = pd.read_csv(csv_path, sep=',')
-save_dir = os.path.dirname(csv_path)
+# ------------------------------
+df = pd.read_csv(csv_path, sep=';')
 
-# Components
-# components = ['Edest_c [kW]', 'Edest_k [kW]', 'Edest_kr [kW]', 'Edest_r [kW]',
-#               'Edest_hr [kW]', 'Edest_h [kW]', 'Edest_e [kW]']
-# component_labels = ['Compressor', 'Cooler', 'Regenerator (kr)', 'Regenerator',
-#                     'Regenerator (hr)', 'Heater', 'Expansion']
+# ------------------------------
+# Plot config (components)
+# ------------------------------
+components = ['Edest_cold', 'Edest_hot', 'Edest_reg', 'Edest_cylinder']
+component_labels = ['Cold side', 'Hot side', 'Regenerator', 'Cylinder']
+component_colors = ['b', 'r', 'g', 'orange']
 
-components = ['Edest_c [kW]', 'Edest_k [kW]', 'Edest_r [kW]',
-             'Edest_h [kW]', 'Edest_e [kW]']
-component_labels = ['Compressor', 'Cooler', 'Regenerator',
-                     'Heater', 'Expansion']
+# ------------------------------
+# Build segments
+# ------------------------------
+segments = {}
 
-component_colors = ['b', 'cyan', 'g', 'orange', 'r']  # Matches your line plot
+if sweep_key in df.columns:
+    # group by the chosen column if it exists
+    try:
+        keys = sorted(df[sweep_key].unique(), key=lambda x: float(x))
+    except Exception:
+        keys = sorted(df[sweep_key].unique())
 
+    for k in keys:
+        seg = df[df[sweep_key] == k].copy().reset_index(drop=True)
+        title = f'{sweep_key} {k}'
+        segments[title] = seg
+else:
+    # fallback: contiguous slicing
+    step = 5
+    labels_map = {
+        'omega':     ['100', '180', '240'],
+        'pcharged':  ['30', '50', '70'],
+        'Theater':   ['600', '700', '800']
+    }
+    values = labels_map.get(sweep_key, [f'{i}' for i in range(len(df)//step)])
 
-# Split data
-segments = {
-    "omega 100": df.iloc[0:5].reset_index(drop=True),
-    "omega 180": df.iloc[5:10].reset_index(drop=True),
-    "omega 240": df.iloc[10:15].reset_index(drop=True)
-}
+    for i, val in enumerate(values):
+        start, end = i * step, (i + 1) * step
+        seg = df.iloc[start:end].reset_index(drop=True)
+        title = f'{sweep_key} {val}'
+        segments[title] = seg
 
+# ------------------------------
 # Plot each segment
+# ------------------------------
 for title, segment_df in segments.items():
-    fig, ax1 = plt.subplots(figsize=(8, 6))  # Set a reasonable figure size
+    segment_df = segment_df.sort_values('Pr').reset_index(drop=True)
 
-    # --- Bar settings ---
-    bar_width = 0.4
+    fig, ax1 = plt.subplots(figsize=(8, 6))
     x = np.arange(len(segment_df))
-    labels = [f"{pr:.1f}" for pr in segment_df['Pr']]  # Clean x-tick labels
-
-    # --- Plot stacked bars ---
+    labels = [f"{pr:.1f}" for pr in segment_df['Pr']]
     bottoms = np.zeros(len(segment_df))
-    bars = []
-    for comp, label, color in zip(components, component_labels, component_colors):
-        bar = ax1.bar(x, segment_df[comp], bar_width, bottom=bottoms, label=label, color = color)
-        bottoms += segment_df[comp]
-        bars.append(bar)
 
-    # --- Primary y-axis settings ---
-    ax1.set_xlabel(r'Pressure Ratio $p_\text{r}$ [-]', fontsize=14)
-    ax1.set_ylabel(r'Exergy Destruction $E_\text{dest}$ [kW]', fontsize=14)
+    # stacked bars
+    for comp, lab, col in zip(components, component_labels, component_colors):
+        ax1.bar(x, segment_df[comp].values, 0.4, bottom=bottoms, label=lab, color=col)
+        bottoms += segment_df[comp].values
+
+    # primary axis
+    ax1.set_xlabel(r'Pressure ratio $p_\mathrm{r}$ [-]', fontsize=14)
+    ax1.set_ylabel(r'Exergy destruction $E_\mathrm{dest}$ [kW]', fontsize=14)
     ax1.set_xticks(x)
-    # Add margin above tallest bar
-    ymax = bottoms.max()
-    ax1.set_ylim(top=ymax * 1.5)  # 5% headroom
     ax1.set_xticklabels(labels, fontsize=12)
     ax1.tick_params(axis='y', labelsize=12)
+    if len(segment_df) > 0:
+        ax1.set_ylim(top=bottoms.max() * 1.15)
 
-    # --- Secondary y-axis for Exergy Efficiency ---
+    # secondary axis
     ax2 = ax1.twinx()
-    ax2.plot(x, segment_df['Ex_eff [%]'], 'k--o', label='Exergy Efficiency [%]', markersize=6)
-    ax2.set_ylabel('Exergy Efficiency [%]', fontsize=14)
+    ax2.plot(x, segment_df['Ex_eff [%]'].values, 'k--o',
+             label='Exergy efficiency [%]', markersize=6)
+    ax2.set_ylabel('Exergy efficiency [%]', fontsize=14)
     ax2.tick_params(axis='y', labelsize=12)
 
-    # --- Combined Legend ---
-    handles1, labels1 = ax1.get_legend_handles_labels()
-    handles2, labels2 = ax2.get_legend_handles_labels()
-    ax1.legend(
-        handles1 + handles2, labels1 + labels2,
-        loc='upper center',
-        ncol=3, fontsize=11, frameon=False
-    )
+    # legend
+    h1, l1 = ax1.get_legend_handles_labels()
+    h2, l2 = ax2.get_legend_handles_labels()
+    ax1.legend(h1 + h2, l1 + l2, loc='upper center', ncol=3, fontsize=11, frameon=False)
 
-    # --- Title & Layout ---
-    # plt.title(f'Exergy Breakdown and Efficiency – {title}', fontsize=15)
+    plt.title(f'Exergy Breakdown & Efficiency — {title}', fontsize=15)
     plt.tight_layout()
-    # plt.subplots_adjust(top=0.88)  # To make room for the legend below
 
-    # --- Save & Show ---
-    save_path = os.path.join(save_dir, f"stacked_exergy_efficiency_{title.replace(' ', '_')}.eps")
+    # save
+    safe_title = title.replace(' ', '_').replace(':', '_')
+    out_name = f"Exergy_efficiency_{safe_title}.eps"
+    save_path = os.path.join(save_dir, out_name)
     plt.savefig(save_path, format='eps')
     plt.show()
+
+    print(f"Saved: {save_path}")
