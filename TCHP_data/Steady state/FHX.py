@@ -154,9 +154,9 @@ for i in range(len(data['Tf_in [K]'])):
 
 # Prepare the input (independent variables) and output (dependent variable)
 X = np.array([
-    # data['mw_dot [kg/s]'],   # Water mass flow rate
+    data['mw_dot [kg/s]'],   # Water mass flow rate
     data['omegab [rpm]'],   # Gas mass flow rate
-    [x - 273.15 for x in data['Tfw_in [K]']]       # Water inlet temperature
+    # [x - 273.15 for x in data['Tfw_in [K]']]       # Water inlet temperature
 ]).T  # Transpose to make it of shape (n_samples, n_features)
 
 y = np.array(AUrec)  # AUrec as the dependent variable

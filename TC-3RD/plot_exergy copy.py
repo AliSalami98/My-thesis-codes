@@ -2,6 +2,26 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib import font_manager as fm
+import numpy as np
+
+# 1) Point to your installed file (from your screenshot)
+path = r"C:\Users\ali.salame\AppData\Local\Microsoft\Windows\Fonts\CHARTERBT-ROMAN.OTF"
+# (add the Bold/Italic too if you use them)
+# fm.fontManager.addfont(r"...\CHARTERBT-BOLD.OTF")
+# fm.fontManager.addfont(r"...\CHARTERBT-ITALIC.OTF")
+
+# 2) Register and use the exact internal name
+fm.fontManager.addfont(path)
+prop = fm.FontProperties(fname=path)
+mpl.rcParams["font.family"] = prop.get_name()   # e.g., "Bitstream Charter"
+mpl.rcParams["font.size"] = 11
+mpl.rcParams["axes.labelsize"] = 11
+mpl.rcParams["xtick.labelsize"] = 10
+mpl.rcParams["ytick.labelsize"] = 10
+mpl.rcParams["legend.fontsize"] = 10
 
 # ------------------------------
 # User controls
@@ -51,7 +71,7 @@ ax.pie(
     startangle=90
 )
 ax.axis('equal')
-ax.set_title(f'{sweep_key} — Exergy destruction breakdown\nat Pr ≈ {target_pr} (picked {row["Pr"]:.3f})', fontsize=12)
+# ax.set_title(f'{sweep_key} — Exergy destruction breakdown\nat Pr ≈ {target_pr} (picked {row["Pr"]:.3f})', fontsize=12)
 
 # save
 out_name = f"Exergy_pie_{sweep_key}_Pr{row['Pr']:.3f}.{save_format}"

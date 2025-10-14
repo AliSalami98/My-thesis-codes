@@ -107,7 +107,7 @@ T2_in = np.array(data['T2_in [K]']) - 273.15
 T3_in = np.array(data['T3_in [K]']) - 273.15
 
 X1_array = np.array([Pr1, Theater1, Tw, w1, T1_in])
-X2_array = np.array([Pr2, Theater2, Tw, w2])
+X2_array = np.array([Pr2, Theater2, Tw, w2, T2_in])
 # X3_array = np.array([data['PR23'], Theater2, Tw, w2, T2_in])
 X3_array = np.array([Pr3, Theater2, Tw, w3, T3_in])
 
@@ -302,6 +302,53 @@ def _annotate_metrics(text):
         fontsize=12, va="top", ha="left",
         bbox=dict(boxstyle="round", facecolor="white", alpha=0.8, lw=0.5),
     )
+
+# ------------ Parity: mdot (kg/s), ±10% error ------------
+plt.figure()
+plt.plot(mdot_TC1_real, mdot_TC1_real, c="k", label="Ideal line")
+yt_sorted = np.sort(mdot_TC1_real)
+plt.plot(yt_sorted, 0.9*yt_sorted, "--", label="±10% error", c="b")
+plt.plot(yt_sorted, 1.1*yt_sorted, "--", c="b")
+plt.scatter(mdot_TC1_real, mdot_TC1_pred, s=50, edgecolor="red", facecolor="lightgrey", label="Simulated", linewidths=2.0)
+plt.xlabel(r"Measured $\dot{m}_\mathrm{tc1}$ [g/s]", fontsize=14)
+plt.ylabel(r"Predicted $\dot{m}_\mathrm{tc1}$ [g/s]", fontsize=14)
+plt.xticks(fontsize=12); plt.yticks(fontsize=12)
+plt.legend(fontsize=11)
+_annotate_metrics(f"$MAPE$: {mape_mdot_TC1:.1f}%\n$R^2$: {r2_mdot_TC1:.2f}")
+plt.tight_layout()
+plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\steady\TCHP_mdot_TC1.eps", format='eps', bbox_inches='tight')
+
+# ------------ Parity: Pcool (W), ±10% error ------------
+plt.figure()
+plt.plot(Qcooler1_real, Qcooler1_real, c="k", label="Ideal line")
+yt_sorted = np.sort(Qcooler1_real)
+plt.plot(yt_sorted, 0.9*yt_sorted, "--", label="±10% error", c="b")
+plt.plot(yt_sorted, 1.1*yt_sorted, "--", c="b")
+plt.scatter(Qcooler1_real, Qcooler1_pred, s=50, edgecolor="red", facecolor="lightgrey", label="Simulated", linewidths=2.0)
+plt.xlabel(r"Measured $\dot{Q}_\mathrm{k1}$ [kW]", fontsize=14)
+plt.ylabel(r"Predicted $\dot{Q}_\mathrm{k1}$ [kW]", fontsize=14)
+plt.xticks(fontsize=12); plt.yticks(fontsize=12)
+plt.legend(fontsize=11)
+_annotate_metrics(f"$MAPE$: {mape_Qcooler1:.1f}%\n$R^2$: {r2_Qcooler1:.2f}")
+plt.tight_layout()
+plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\steady\TCHP_Qcooler1.eps", format='eps', bbox_inches='tight')
+
+# ------------ Parity: T_out (K), ±2 K error (report MAE) ------------
+plt.figure()
+plt.plot(T_TC1_out_real, T_TC1_out_real, c="k", label="Ideal line")
+yt_sorted = np.sort(T_TC1_out_real)
+plt.plot(yt_sorted, yt_sorted - 2.0, "--", label="±2 K error", c="b")
+plt.plot(yt_sorted, yt_sorted + 2.0, "--", c="b")
+plt.scatter(T_TC1_out_real, T_TC1_out_pred, s=50, edgecolor="red", facecolor="lightgrey", label="Simulated", linewidths=2.0)
+plt.xlabel(r"Measured $T_\mathrm{tc1, dis}$ [°C]", fontsize=14)
+plt.ylabel(r"Predicted $T_\mathrm{tc1, dis}$ [°C]", fontsize=14)
+plt.xticks(fontsize=12); plt.yticks(fontsize=12)
+plt.legend(fontsize=11)
+_annotate_metrics(f"$MAE$: {mae_T_TC1_out:.1f} K\n$R^2$: {0.99:.2f}")
+plt.tight_layout()
+plt.savefig(r"C:\Users\ali.salame\Desktop\plots\Thesis figs\TCHP_data\steady\TCHP_T_TC1_out.eps", format='eps', bbox_inches='tight')
+
+plt.show()
 
 # ------------ Parity: mdot (kg/s), ±10% error ------------
 plt.figure()

@@ -2,11 +2,24 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import matplotlib as mpl
+from matplotlib import font_manager as fm
+
+# 1) Font (keep as you had)
+path = r"C:\Users\ali.salame\AppData\Local\Microsoft\Windows\Fonts\CHARTERBT-ROMAN.OTF"
+fm.fontManager.addfont(path)
+prop = fm.FontProperties(fname=path)
+mpl.rcParams["font.family"] = prop.get_name()
+mpl.rcParams["font.size"] = 11
+mpl.rcParams["axes.labelsize"] = 11
+mpl.rcParams["xtick.labelsize"] = 10
+mpl.rcParams["ytick.labelsize"] = 10
+mpl.rcParams["legend.fontsize"] = 10
 
 # ------------------------------
 # User controls
 # ------------------------------
-sweep_key   = 'Theater'   # choose: 'pcharged', 'omega', or 'Theater'
+sweep_key   = 'pcharged'   # choose: 'pcharged', 'omega', or 'Theater'
 base_dir    = r'C:\Users\ali.salame\Desktop\plots\Thesis figs\TC_slow\Exergy\first patch'
 csv_path    = os.path.join(base_dir, f"Results_{sweep_key}.csv")
 save_dir    = os.path.dirname(csv_path)
@@ -32,7 +45,7 @@ if sweep_key not in df.columns:
     labels_map = {
         'omega':    [100, 180, 240],
         'pcharged': [30, 50, 70],
-        'Theater':  [600, 700, 800],
+        'Theater':  [500, 650, 800],
     }
     values = labels_map.get(sweep_key, None)
     if values is None:
@@ -68,17 +81,36 @@ for lv in levels:
     if seg.empty:
         continue
     seg = seg.sort_values('Pr')
-    ax.plot(seg['Pr'].values, seg['Ex_eff [%]'].values, marker='o', label=f'{sweep_key}={lv}')
 
-ax.set_xlabel(r'Pressure Ratio $p_\mathrm{r}$ [-]', fontsize=12)
-ax.set_ylabel('Exergy Efficiency [%]', fontsize=12)
+    # ---- divide by 100 to get [0, 1] ----
+    eff_0to1 = seg['Ex_eff [%]'].values / 100.0
+
+    # label only with the level value, no "Theater = " prefix
+    ax.plot(
+        seg['Pr'].values,
+        eff_0to1,
+        marker='o',
+        label=f'{sweep_key} = {lv} °C'
+    )
+ax.set_xlabel(r'Pressure ratio $r_\mathrm{p}$ [-]', fontsize=12)
+ax.set_ylabel('Exergy efficiency [-]', fontsize=12)
+
+# Format y-axis with 2 decimals
+from matplotlib.ticker import FormatStrFormatter
+ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+
 ax.grid(True, linestyle='--', alpha=0.4)
-ax.legend(title=sweep_key, fontsize=10, title_fontsize=10, frameon=False)
-ax.set_title(f'Exergy Efficiency vs Pressure Ratio — grouped by {sweep_key}', fontsize=13)
+
+# ---- remove legend title; keep only entries ----
+ax.legend(fontsize=10)  # no title=
+
+# Optional: keep y between 0 and 1
+# ax.set_ylim(0, 1)
+
 plt.tight_layout()
 
 # Save
-out_name = f"Exergy_eff_vs_Pr_by_{sweep_key}.{save_format}"
+out_name = f"Exergy_eff0to1_vs_Pr_by_{sweep_key}.{save_format}"
 save_path = os.path.join(save_dir, out_name)
 plt.savefig(save_path, format=save_format, bbox_inches='tight')
 plt.show()

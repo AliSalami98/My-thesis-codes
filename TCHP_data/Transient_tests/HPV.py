@@ -199,8 +199,8 @@ ax_hpv1.grid(True, alpha=0.3)
 
 # --- Coupling output (example: supply water temperature) ---
 # Optional sim overlay:
-# ax_hpv2.plot(t_ss, Tw_out_ss, '--', lw=1.8, label='Sim: Water supply', color='#B22222')
-ax_hpv2.plot(t1_ss, d_Tc_out, '-', lw=2.3, label= 'Gas cooler outlet', color="#B84E44")
+ax_hpv2.plot(t1_ss, d_Tw_out, '-', lw=2.3, label='Supply water', color='#B22222')
+# ax_hpv2.plot(t1_ss, d_Tc_out, '-', lw=2.3, label= 'Gas cooler outlet', color="#B84E44")
 ax_hpv2.set_ylabel(r"Temperature [°C]", fontsize=14)
 ax_hpv2.legend(fontsize=11)
 ax_hpv2.grid(True, alpha=0.3)
